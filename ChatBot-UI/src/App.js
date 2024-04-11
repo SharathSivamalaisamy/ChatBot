@@ -12,15 +12,29 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userInput.trim()) return;
-
-    // Here you would send the userInput to your backend for processing
-    // For now, let's just mock a response
-    const mockResponse = `Mock response to: ${userInput}`;
-
-    setResponses([...responses, { question: userInput, answer: mockResponse }]);
+  
+    // Send the userInput to the backend using the fetch API
+    try {
+      const response = await fetch('http://localhost:5000/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_input: userInput }),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      setResponses([...responses, { question: userInput, answer: data.answer }]);
+    } catch (error) {
+      console.error("Could not get a response: ", error);
+    }
+  
     setUserInput(''); // Reset input field
   };
-
   return (
     <div className="App">
       <h1>Chatbot UI</h1>
