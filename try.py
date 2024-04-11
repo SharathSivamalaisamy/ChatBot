@@ -7,7 +7,6 @@ import numpy as np
 
 
 def extract_faq_data(url):
-    
     faq_data = {}
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
@@ -16,39 +15,33 @@ def extract_faq_data(url):
     sections = soup.find_all('div', class_='faq-content-texts')
     
     for section in sections:
-       
-        heading = section.find_previous('h1', class_='stellar-title__large black').text.strip()
-        # Find all questions and answers within the section
-        questions = section.find_all('h4', class_='stellar-title__small black')
-
-        if not questions:
-            continue
-        for question in questions:
-            question_text = question.text.strip()
-            # Find all <p> tags following the question until the next question
-            answer_texts = []
-            next_element = question.find_next_sibling()
-            while next_element and next_element.name != 'h4':
-                if next_element.name == 'p':
-                    answer_texts.append(next_element.text.strip())
-                next_element = next_element.find_next_sibling()
-
-            # Join all answer texts to form the answer
-            answer_text = ' '.join(answer_texts)
-
-            # Add question and answer pair to dictionary
-            faq_data[question_text] = answer_text
-
-        # Check for heading followed by answer
-        heading_element = section.find_previous('h3', class_='stellar-title__medium black')
+        # Extract heading from the current section, if available
+        heading_element = section.find('h3', class_='stellar-title__medium black')
         if heading_element:
             heading_text = heading_element.text.strip()
             answer_text = ' '.join([p.text.strip() for p in section.find_all('p', class_='stellar-body__medium black')])
-
-            # Add heading and answer pair to dictionary
             faq_data[heading_text] = answer_text
+            
+        # Find all questions and answers within the section
+        questions = section.find_all('h4', class_='stellar-title__small black')
+        if questions:
+            for question in questions:
+                question_text = question.text.strip()
+                answer_texts = []
+                next_element = question.find_next_sibling()
+                while next_element and next_element.name != 'h4':
+                    if next_element.name == 'p':
+                        answer_texts.append(next_element.text.strip())
+                    next_element = next_element.find_next_sibling()
+
+                # Join all answer texts to form the answer
+                answer_text = ' '.join(answer_texts)
+
+                # Add question and answer pair to dictionary
+                faq_data[question_text] = answer_text
 
     return faq_data
+
 
 
 # url = 'https://www.hp.com/in-en/shop/faqs-content#delivery'
