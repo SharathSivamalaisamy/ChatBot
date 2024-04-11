@@ -1,5 +1,5 @@
 ### the most correct code till now 
-from urllib import request
+from flask import request
 from flask import Flask, jsonify
 from flask_cors import CORS  # This is needed for cross-origin requests
 import requests
