@@ -49,6 +49,7 @@ def extract_faq_data(url):
 
 
 
+
 # url = 'https://www.hp.com/in-en/shop/faqs-content#delivery'
 # faq_data = extract_faq_data(url)
 
